@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { fetchNotes } from "../../lib/api";
 import { useDebounce } from "use-debounce";
@@ -19,6 +19,11 @@ export default function NotesClient() {
   const [debounced] = useDebounce(search, 500);
   const [isModal, setIsModal] = useState(false);
 
+  const handleSearchChange = useCallback((value: string) => {
+    setSearch(value);
+    setPage(1);
+  }, []);
+
   const notesQuery = useQuery({
     queryKey: ["notes", page, debounced],
     queryFn: () => fetchNotes({ page, perPage: PER_PAGE, search: debounced }),
@@ -32,7 +37,7 @@ export default function NotesClient() {
   return (
     <>
       <header>
-        <SearchBox value={search} onChange={setSearch} />
+        <SearchBox value={search} onChange={handleSearchChange} />
 
         {totalPages > 1 && (
           <Pagination

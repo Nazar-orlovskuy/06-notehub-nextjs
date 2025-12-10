@@ -1,29 +1,37 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import styles from './NoteDetail.module.css';
 import { useQuery } from "@tanstack/react-query";
 import { fetchNoteById } from "../../../lib/api";
 
-export default function NoteDetailsClient() {
-  const { id } = useParams();
+interface NoteDetailsClientProps {
+  id: string;
+}
 
-  const { data: note, isLoading, error } = useQuery({
+export default function NoteDetailsClient({ id }: NoteDetailsClientProps) {
+  const { data, isLoading, error } = useQuery({
     queryKey: ["note", id],
-    queryFn: () => fetchNoteById(id as string),
+    queryFn: () => fetchNoteById(id),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false
   });
 
-  if (isLoading) return <p>Loading, please wait...</p>;
-  if (error || !note) return <p>Something went wrong.</p>;
+  if (isLoading) return <p className={styles.content}>Завантаження...</p>;
+  if (error) return <p className={styles.content}>Помилка завантаження нотатки</p>;
+  if (!data) return <p className={styles.content}>Нотатку не знайдено</p>;
 
   return (
-    <div>
-      <div>
-        <div>
-          <h2>{note.title}</h2>
+    <main className={styles.main}>
+      <div className={styles.container}>
+        <div className={styles.item}>
+          <div className={styles.header}>
+            <h2>{data.title}</h2>
+            <span className={styles.tag}>{data.tag}</span>
+          </div>
+          <p className={styles.content}>{data.content}</p>
+          <p className={styles.date}>{data.createdAt}</p>
         </div>
-        <p>{note.content}</p>
-        <p>{note.createdAt}</p>
       </div>
-    </div>
+    </main>
   );
 }

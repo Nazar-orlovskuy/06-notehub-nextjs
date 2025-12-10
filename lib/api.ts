@@ -11,28 +11,35 @@ const api = axios.create({
   },
 });
 
+/* Returns paginated note list */
 export const fetchNotes = async ({
   page = 1,
   perPage = 12,
   search = "",
 }: FetchNotesParams): Promise<FetchNotesResponse> => {
-  const { data } = await api.get("/notes", { params: { page, perPage, search } });
+  const { data } = await api.get<FetchNotesResponse>("/notes", {
+    params: { page, perPage, search },
+  });
+
   return data;
 };
 
+/* Returns single note */
 export const fetchNoteById = async (id: string): Promise<Note> => {
-  const { data } = await api.get(`/notes/${id}`);
+  const { data } = await api.get<Note>(`/notes/${id}`);
   return data;
 };
 
+/* Creates a new note */
 export const createNote = async (
   note: Omit<Note, "id" | "createdAt" | "updatedAt">
-) => {
-  const { data } = await api.post("/notes", note);
+): Promise<Note> => {
+  const { data } = await api.post<Note>("/notes", note);
   return data;
 };
 
-export const deleteNote = async (id: string) => {
-  const { data } = await api.delete(`/notes/${id}`);
+/* Deletes a note */
+export const deleteNote = async (id: string): Promise<{ message: string }> => {
+  const { data } = await api.delete<{ message: string }>(`/notes/${id}`);
   return data;
 };

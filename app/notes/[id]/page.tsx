@@ -1,27 +1,29 @@
-"use client";
-
-import { useQuery } from "@tanstack/react-query";
+import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
+import getQueryClient from "../../../lib/getQueryClient";
 import { fetchNoteById } from "../../../lib/api";
+import NoteDetailsClient from "./NoteDetails.client";
 
-interface NoteDetailsClientProps {
-  id: string;
+interface NoteDetailsPageProps {
+  params: {
+    id: string;
+  };
 }
 
-export default function NoteDetailsClient({ id }: NoteDetailsClientProps) {
-  const { data, isLoading, error } = useQuery({
+export default async function NoteDetailsPage({ params }: NoteDetailsPageProps) {
+  const { id } = params;
+  const queryClient = getQueryClient();
+
+  // Prefetch note data on the server
+  await queryClient.prefetchQuery({
     queryKey: ["note", id],
     queryFn: () => fetchNoteById(id),
   });
 
-  if (isLoading) return <p>Завантаження...</p>;
-  if (error) return <p>Помилка завантаження нотатки</p>;
-
-  if (!data) return <p>Дані не знайдено</p>; // <-- фіксує TS18048
+  const dehydratedState = dehydrate(queryClient);
 
   return (
-    <div>
-      <h1>{data.title}</h1>
-      <p>{data.content}</p> {/* <-- правильне поле API */}
-    </div>
+    <HydrationBoundary state={dehydratedState}>
+      <NoteDetailsClient id={id} />
+    </HydrationBoundary>
   );
 }
