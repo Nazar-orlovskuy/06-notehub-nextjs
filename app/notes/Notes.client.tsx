@@ -1,5 +1,6 @@
 "use client";
 
+import styles from '../notes/page.module.css';
 import { useState, useCallback } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { fetchNotes } from "../../lib/api";
@@ -35,8 +36,10 @@ export default function NotesClient() {
   const totalPages = data?.totalPages ?? 0;
 
   return (
-    <>
-      <header>
+    <div className={styles.app}>
+      
+      {/* Toolbar */}
+      <div className={styles.toolbar}>
         <SearchBox value={search} onChange={handleSearchChange} />
 
         {totalPages > 1 && (
@@ -47,9 +50,15 @@ export default function NotesClient() {
           />
         )}
 
-        <button onClick={() => setIsModal(true)}>Create note +</button>
-      </header>
+        <button
+          className={styles.button}
+          onClick={() => setIsModal(true)}
+        >
+          Create note +
+        </button>
+      </div>
 
+      {/* Notes List */}
       <main>
         {notesQuery.isLoading && <p>Loading notes...</p>}
         {notesQuery.isError && <p>Error loading notes.</p>}
@@ -57,11 +66,12 @@ export default function NotesClient() {
         {notes.length > 0 && <NoteList notes={notes} />}
       </main>
 
+      {/* Modal */}
       {isModal && (
         <Modal onClose={() => setIsModal(false)}>
           <NoteForm onClose={() => setIsModal(false)} />
         </Modal>
       )}
-    </>
+    </div>
   );
 }

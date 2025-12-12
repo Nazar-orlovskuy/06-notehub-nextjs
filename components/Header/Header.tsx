@@ -8,11 +8,11 @@ export default function Header() {
         NoteHub
       </Link>
       <nav aria-label="Main Navigation">
-        <ul className={styles.navList}>
-          <li className={styles.navItem}>
+        <ul className={styles.navigation}>
+          <li>
             <Link href="/">Home</Link>
           </li>
-          <li className={styles.navItem}>
+          <li>
             <Link href="/notes">Notes</Link>
           </li>
         </ul>
