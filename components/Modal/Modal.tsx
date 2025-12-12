@@ -1,4 +1,5 @@
 "use client";
+
 import styles from './Modal.module.css';
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
@@ -26,7 +27,7 @@ export default function Modal({ children, onClose }: ModalProps) {
   }, [onClose]);
 
   return createPortal(
-    <div className={styles.modalBackdrop} onClick={onClose}>
+    <div className={styles.modalBackdrop} onClick={onClose} role="dialog" aria-modal="true">
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         {children}
       </div>
